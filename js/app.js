@@ -19,7 +19,7 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.x = this.x * dt;
+    this.x = this.x + this.width * dt;
     this.checkCollisions();
 }
 
@@ -36,7 +36,7 @@ Enemy.prototype.checkCollisions = function() {
        rect1.x + rect1.width > rect2.x &&
        rect1.y < rect2.y + rect2.height &&
        rect1.height + rect1.y > rect2.y) {
-        console.log('Game over');
+        alert('Game over');
     }
 }
 
@@ -53,6 +53,7 @@ var Player = function(x0, y0, speed) {
 }
 
 Player.prototype.update = function(dt){}
+
 Player.prototype.render = function(){
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
@@ -61,8 +62,6 @@ Player.prototype.handleInput = function(direction){
         maxColIndex = 4,
         currentRow = Math.floor(this.y/83),
         currentCol = Math.floor(this.x/101);
-        console.log('currentRow: ' + currentRow);
-        console.log('currentCol: ' + currentCol);
 
     switch(direction) {
         case 'left':
@@ -86,21 +85,22 @@ Player.prototype.handleInput = function(direction){
             }
             break;
     }
-    currentRow = Math.floor(this.x/83),
-    currentCol = Math.floor(this.y/101),
+}
 
-    console.log('currentRow: ' + currentRow);
-    console.log('currentCol: ' + currentCol);
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
 }
 
 // Now instantiate your objects.
-var player = new Player(202, 83*5, 1);
-var enemy1 = new Enemy(0,0,1);
-var enemy2 = new Enemy(101,83,1);
-var enemy3 = new Enemy(202,166,1);
+var player = new Player(202, 83 * 5, 3);
+var allEnemies = [];
+for (var i = 0; i < 3; i++) {
+    var enemy = new Enemy(-101 * getRandomInt(1, 5), 83 * getRandomInt(1, 4), getRandomInt(1, 5));
+    allEnemies.push(enemy);
+}
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var allEnemies = [enemy1, enemy2, enemy3];
+
 
 
 // This listens for key presses and sends the keys to your
