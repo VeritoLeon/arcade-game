@@ -19,7 +19,13 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.x = this.x + this.width * dt;
+    if(this.x >= 101 * 5)
+    {
+        this.x = -(101 * 5);
+        this.speed = getRandomInt(2, 5);
+
+    }
+    this.x = this.x + this.width * this.speed * dt;
     this.checkCollisions();
 }
 
@@ -37,6 +43,7 @@ Enemy.prototype.checkCollisions = function() {
        rect1.y < rect2.y + rect2.height &&
        rect1.height + rect1.y > rect2.y) {
         alert('Game over');
+        reset();
     }
 }
 
@@ -44,18 +51,29 @@ Enemy.prototype.checkCollisions = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function(x0, y0, speed) {
-    this.sprite = 'images/char-boy.png';
+    this.sprite = 'images/char-pink-girl.png';
     this.x = x0;
     this.y = y0;
     this.width = 101;
     this.height = 83;
     this.speed = speed;
+    this.won = false;
+    this.lives = 3;
 }
 
-Player.prototype.update = function(dt){}
+Player.prototype.update = function(dt){
+    if(this.y === 0) {
+        this.won = true;
+        this.sprite = 'images/char-princess-girl.png';
+        this.y = 0;
+    }
+}
 
 Player.prototype.render = function(){
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if(this.won) {
+        win();
+    }
 }
 Player.prototype.handleInput = function(direction){
     var maxRowIndex = 5,
@@ -87,25 +105,39 @@ Player.prototype.handleInput = function(direction){
     }
 }
 
+
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function reset() {
+    player.x = 202;
+    player.y = 83 * 4;
+}
+
+function win() {
+    ctx.fillStyle = "#000"; // Set color to black
+    ctx.font = "100px serif";
+    ctx.fillText("You won!", 101/2, 83*3.5);
+    allEnemies = [];
+    document.removeEventListener('keyup', listener);
+}
+
 // Now instantiate your objects.
-var player = new Player(202, 83 * 5, 3);
+var player = new Player(202, 83 * 4, 3);
 var allEnemies = [];
 for (var i = 0; i < 3; i++) {
-    var enemy = new Enemy(-101 * getRandomInt(1, 5), 83 * getRandomInt(1, 4), getRandomInt(1, 5));
+    var enemy = new Enemy(-101 * getRandomInt(1, 3), 83 * (i + 1), getRandomInt(2, 5));
     allEnemies.push(enemy);
 }
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
 
-
+var listener;
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
+document.addEventListener('keyup', listener = function(e) {
     var allowedKeys = {
         37: 'left',
         38: 'up',
